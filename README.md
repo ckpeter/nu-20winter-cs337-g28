@@ -31,3 +31,17 @@ Note that most of the tweets are fairly useless, so the approach is to use regex
 specific kinds of tweets that would indicate the information, such as
 "[someone] won award for [award type]"
 
+The basic framework is that the the data is loaded, then some preprocessing is done,
+mostly in tokenizing and in removing duplicate tweets. Then each tweet is fed to a
+function that will evaluate it and extract useful information. The extracted information is
+then stored in the "ideas" variable, which is basically a dictionary that holds various kinds
+of guesses and votes.
+
+As additional rules are adding for extraction, the single function will probably become
+many functions, each specializing in extracting a particular kind of information, such as
+presenters or award names.
+
+Once all the tweets are processed, the ideas variable should hold all relevant information,
+and a final output processing code can be used to select information based on votes,
+associate like terms, and eventually output the required answers.
+
