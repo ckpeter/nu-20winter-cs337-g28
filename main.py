@@ -69,16 +69,6 @@ def eval_tw(tw, ideas):
       awards[aw].append([1, tw['text']])
       links[link].append([1, tw['text']])
 
-def process_basic(data, out):
-  ## Basic goals:
-  ## Host(s) (for the entire ceremony)
-  ## Award Names
-  ## Presenters, mapped to awards*
-  ## Nominees, mapped to awards*
-  ## Winners, mapped to awards*
-  
-  return out
-
 def print_votes(votes, detailed=True):
   keys = sorted(votes.keys(), reverse=False, key=lambda x: len(votes[x]))
   
@@ -92,7 +82,15 @@ def print_votes(votes, detailed=True):
     
   print("\n".join(lines))
 
-def process_additional(data, out):
+def goal_list(data, out):
+  """
+  ## Basic goals:
+  ## Host(s) (for the entire ceremony)
+  ## Award Names
+  ## Presenters, mapped to awards*
+  ## Nominees, mapped to awards*
+  ## Winners, mapped to awards*
+  """
   """
   Red carpet – For example, determine who was best dressed, worst dressed, most discussed, most controversial, or perhaps find pictures of the best and worst dressed, etc.
   Humor – For example, what were the best jokes of the night, and who said them?
@@ -102,7 +100,7 @@ def process_additional(data, out):
   Your choice – If you have a cool idea, suggest it to the TA! Ideas that will require the application of NLP and semantic information are more likely to be approved.
   """
   pass
-
+  
 def read_file(file):
   with open(file) as json_file:
     data = json.load(json_file)
