@@ -14,7 +14,7 @@ Also download the given json data files
 
 python sample_subset.py gg2013.json
 
-to generate a small data set for testing
+to generate a small data set for faster development runs
 
 # To run
 
