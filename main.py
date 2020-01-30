@@ -32,7 +32,7 @@ def main():
   for tw in data:
     eval_tw(tw, ideas)
   
-  print_votes(ideas['awards'])
+  print_votes(ideas['winners'])
 
 """
 Given one tweet, evaluate it, and if it fits the target goal, add to the votes.
@@ -43,9 +43,8 @@ def eval_tw(tw, ideas):
   links = ideas['links']
   
   for k, tk in enumerate(tw['tokens']):
-    #if k > 0 and re.match(r'^(win|wins|won)$', tk):
-    if k > 0 and re.match(r'^(nominated)$', tk):
-      # TODO smarter way of finding the subject than just going back by 1?
+    #if k > 0 and re.match(r'^(nominated)$', tk): # For nominees and awards
+    if k > 0 and re.match(r'^(win|wins|won)$', tk):
       subj = tw['tokens'][k-1].lower()
       aw = " ".join(tw['tokens'][k+1:k+4]).lower()
       link = subj + "=" + aw
