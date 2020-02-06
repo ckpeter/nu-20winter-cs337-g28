@@ -3,6 +3,10 @@ import nltk
 import re
 import sys
 
+import process_data
+
+import random
+
 ## gg2013/5/2020.json
 file = sys.argv[1]
 
@@ -13,13 +17,13 @@ stops = ['just', 'he', 'she', 'have', 'you', "n't", 'patriots', 'pats',
 min_len = 3
 
 def main():
-  data = read_file(file)
+  data = process_data.read_file(file)
   print("%%%%%%%%% BEGIN RUN " + str(len(data)) + " %%%%%%%%% " + file)
   
   if False:
     print_tw(data)
     
-  data = preprocess_data(data)
+  data = process_data.preprocess_data(data)
   print("%%%%%%%%% Pre-precessing completed %%%%%%%%% ")
   out = {}
   ideas = {
@@ -32,7 +36,7 @@ def main():
   for tw in data:
     eval_tw(tw, ideas)
   
-  print_votes(ideas['winners'])
+  print_votes(ideas['awards'], detailed=False)
 
 """
 Given one tweet, evaluate it, and if it fits the target goal, add to the votes.
@@ -100,6 +104,8 @@ def goal_list(data, out):
   """
   pass
   
+
+"""
 def read_file(file):
   with open(file) as json_file:
     data = json.load(json_file)
@@ -126,6 +132,8 @@ def preprocess_data(data):
     tw['tokens'] = nltk.word_tokenize(tw['text'])
     
   return data
+
+"""
   
 def print_tw(tws):
   if False:
