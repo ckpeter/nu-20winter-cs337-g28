@@ -1,5 +1,5 @@
 import json
-import nltk
+from nltk import word_tokenize, pos_tag
 import re
 import sys
 
@@ -13,7 +13,7 @@ file = sys.argv[1]
 # These are definitely not hosts, awards, and not winners
 # e.g. 'just won', 'she wins'
 stops = ['just', 'he', 'she', 'have', 'you', "n't", 'patriots', 'pats',
-'should', 'will/should', 'already', 'a', 'an', 'the', 'will', 'would']
+'should', 'will/should', 'already', 'a', 'an', 'the', 'will', 'would', 'for', 'at', 'in', '!', '#']
 min_len = 3
 
 def main():
@@ -34,7 +34,8 @@ def main():
   }
   
   for tw in data:
-    eval_tw(tw, ideas)
+    # eval_tw(tw, ideas)
+    guess_award_names(tw, ideas)
   
   print_votes(ideas['awards'], detailed=False)
 
@@ -72,6 +73,33 @@ def eval_tw(tw, ideas):
       awards[aw].append([1, tw['text']])
       links[link].append([1, tw['text']])
 
+def guess_award_names(tw, ideas):
+  awards = ideas['awards']
+
+  # Hypothesis: award names are preceded by "wins best"
+  hypothesis = "wins best"
+  max_len = 6
+
+  # Search for occurance of hypothesis
+  if re.search(hypothesis, tw['text']):
+
+    # Isolate text after hypothesis keywords, cut down to 4 words max or until stop
+    rest_of_tweet = "best" + re.split(hypothesis, tw['text'])[1]
+    rest_of_tweet_tokens = word_tokenize(rest_of_tweet)
+    
+    for i, token in enumerate(rest_of_tweet_tokens):
+      if token in stops:
+        rest_of_tweet_tokens = rest_of_tweet_tokens[:i]
+    if len(rest_of_tweet_tokens) > max_len:
+      rest_of_tweet_tokens = rest_of_tweet_tokens[:max_len]
+
+    award_name = " ".join(rest_of_tweet_tokens)
+
+    if not award_name in awards:
+      awards[award_name] = []
+    awards[award_name].append([1, tw['text']])
+
+
 def print_votes(votes, detailed=True):
   keys = sorted(votes.keys(), reverse=False, key=lambda x: len(votes[x]))
   
@@ -104,48 +132,18 @@ def goal_list(data, out):
   """
   pass
   
-
-"""
-def read_file(file):
-  with open(file) as json_file:
-    data = json.load(json_file)
-    for v in data:
-      # save the original text in a separate field
-      v['original'] = v['text']
-    return data
-
-def preprocess_data(data):
-  # Remove dups
-  data = sorted(data, key=lambda x: x['text'])
-  last = None
-  new_data = []
-  
-  for tw in data:
-    if last != tw['text']:
-      new_data.append(tw)
-      last = tw['text']
-    
-  data = new_data
-  
-  # Tokenize
-  for tw in data:
-    tw['tokens'] = nltk.word_tokenize(tw['text'])
-    
-  return data
-
-"""
   
 def print_tw(tws):
   if False:
-    print("\n\n=== ".join([str(nltk.word_tokenize(x['text'])) for x in tws]))
+    print("\n\n=== ".join([str(word_tokenize(x['text'])) for x in tws]))
   else:
     print("\n\n=== ".join([x['text'] for x in tws]))
 
 def nldk_demo():
 	sentence = """At eight o'clock on Thursday morning
 ... Arthur didn't feel very good."""
-	tokens = nltk.word_tokenize(sentence)
-	tagged = nltk.pos_tag(tokens)
+	tokens = word_tokenize(sentence)
+	tagged = pos_tag(tokens)
 	tagged[0:6]
 	print(tokens)
 

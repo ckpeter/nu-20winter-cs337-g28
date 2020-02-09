@@ -17,7 +17,22 @@ while True:
         break
 
     else:
+        count = 0
         for tw in data:
+            '''
             for tk in tw['tokens']:
                 if re.match(query, tk):
-                    print(tw['text'])
+                    try:
+                        print(tw['text'] + "\n")
+                        count += 1
+                    except OSError:
+                        print("OSError occured")
+            '''
+            try:
+                if re.search(query, tw['text']):
+                    print(tw['text'] + "\n")
+                    count += 1
+            except OSError:
+                print("OSError occured")
+        
+        print(str(count) + " found")

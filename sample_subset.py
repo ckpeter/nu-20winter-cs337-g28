@@ -4,7 +4,7 @@ import json
 
 def write_sample():
   file = sys.argv[1]
-  of = os.path.dirname(file) + '/ggsample.json'
+  of = os.path.dirname(file) + 'ggsample.json'
   num = 20000
   
   data = None

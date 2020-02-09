@@ -9,7 +9,9 @@ def read_file(file):
       v['original'] = v['text']
     return data
 
-def preprocess_data(data):
+# May need to conisder lowercasing here, we don't really need caps and they mess with search
+# May need to consider keeping dups because that means they had more attention = more important.
+def preprocess_data(data, shuffle=False):
   # Remove dups
   data = sorted(data, key=lambda x: x['text'])
   last = None
