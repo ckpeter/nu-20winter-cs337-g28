@@ -33,9 +33,23 @@ def main():
     'xx': {}
   }
   
+  award_names = [
+    'best motion picture',
+    'best director',
+    'best actor',
+    'best actress',
+    'best supporting actor',
+    'best supporting actress',
+    'best screenplay',
+    'best original score',
+    'best original song',
+    'cecil b demille'
+  ]
+
   for tw in data:
     # eval_tw(tw, ideas)
     guess_award_names(tw, ideas)
+    # guess_winners(tw, ideas, award_names)
   
   print_votes(ideas['awards'], detailed=False)
 
@@ -95,9 +109,29 @@ def guess_award_names(tw, ideas):
 
     award_name = " ".join(rest_of_tweet_tokens)
 
+    # Awards: Key: name of award Vlue: list of all tweets referenceing award name
     if not award_name in awards:
-      awards[award_name] = []
+      awards[award_name] = {}
     awards[award_name].append([1, tw['text']])
+
+  def guess_winners(tw, ideas, award_names):
+    winners = ideas['winners']
+
+    # See if the tweet contains "...wins [some name of award]"
+    for award_name in award_names:
+      hypothesis = "wins " + award_name
+      winners[award_name] = {}
+
+      if re.search(hypothesis, tw['text']):
+        tweet_beginning = re.split(hypothesis, tw['text'])[0]
+        tweet_beginning_tokens = word_tokenize(rest_of_tweet)
+
+        # Iterate through tokens backwards to find potential stops
+        # for range(len(tweet_beginning_tokens), 0, -1):
+        
+        if tweet_beginning not in winners[award_name]
+          winners[award_name][tweet_beginning] = []
+        winners[award_name][tweet_beginning].append([1, tw['text']])
 
 
 def print_votes(votes, detailed=True):
