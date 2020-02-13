@@ -45,13 +45,17 @@ def main():
     'best original song',
     'cecil b demille'
   ]
+  for award_name in award_names:
+    ideas['winners'][award_name] = {}
 
   for tw in data:
     # eval_tw(tw, ideas)
     guess_award_names(tw, ideas)
-    # guess_winners(tw, ideas, award_names)
+    ideas['winners'] = guess_winners(tw, ideas, award_names)
   
-  print_votes(ideas['awards'], detailed=False)
+  # print_votes(ideas['awards'], detailed=False)
+  for award in award_names:
+    print_votes(ideas['winners'][award], detailed=False)
 
 """
 Given one tweet, evaluate it, and if it fits the target goal, add to the votes.
@@ -95,10 +99,10 @@ def guess_award_names(tw, ideas):
   max_len = 6
 
   # Search for occurance of hypothesis
-  if re.search(hypothesis, tw['text']):
+  if re.search(hypothesis, tw['text'].lower()):
 
     # Isolate text after hypothesis keywords, cut down to 4 words max or until stop
-    rest_of_tweet = "best" + re.split(hypothesis, tw['text'])[1]
+    rest_of_tweet = "best" + re.split(hypothesis, tw['text'].lower())[1]
     rest_of_tweet_tokens = word_tokenize(rest_of_tweet)
     
     for i, token in enumerate(rest_of_tweet_tokens):
@@ -109,29 +113,33 @@ def guess_award_names(tw, ideas):
 
     award_name = " ".join(rest_of_tweet_tokens)
 
-    # Awards: Key: name of award Vlue: list of all tweets referenceing award name
-    if not award_name in awards:
-      awards[award_name] = {}
+    # Awards: Key: name of award Value: list of all tweets referenceing award name
+    if not award_name in ideas['awards']:
+      awards[award_name] = []
+
     awards[award_name].append([1, tw['text']])
 
-  def guess_winners(tw, ideas, award_names):
-    winners = ideas['winners']
+def guess_winners(tw, ideas, award_names):
+  winners = ideas['winners']
 
-    # See if the tweet contains "...wins [some name of award]"
-    for award_name in award_names:
-      hypothesis = "wins " + award_name
-      winners[award_name] = {}
+  # See if the tweet contains "...wins [some name of award]"
+  for award_name in award_names:
+    hypothesis = "wins " + award_name
 
-      if re.search(hypothesis, tw['text']):
-        tweet_beginning = re.split(hypothesis, tw['text'])[0]
-        tweet_beginning_tokens = word_tokenize(rest_of_tweet)
+    if re.search(hypothesis, tw['text'].lower()):
+      tweet_beginning = re.split(hypothesis, tw['text'])[0]
+      tweet_beginning_tokens = word_tokenize(tweet_beginning)
 
-        # Iterate through tokens backwards to find potential stops
-        # for range(len(tweet_beginning_tokens), 0, -1):
-        
-        if tweet_beginning not in winners[award_name]
-          winners[award_name][tweet_beginning] = []
-        winners[award_name][tweet_beginning].append([1, tw['text']])
+      # Iterate through tokens backwards to find potential stops
+      # for range(len(tweet_beginning_tokens), 0, -1):
+      
+      if not tweet_beginning in winners[award_name]:
+        winners[award_name][tweet_beginning] = []
+      
+
+      winners[award_name][tweet_beginning].append([1, tw['text']])
+
+  return winners
 
 
 def print_votes(votes, detailed=True):
@@ -146,6 +154,26 @@ def print_votes(votes, detailed=True):
       lambda k: "===== " + k + " (" + str(len(votes[k])) + " votes) =====\n", keys)
     
   print("\n".join(lines))
+
+def output_readable(ideas, awards):
+  for award in awards:
+    print("True Award Name: " + award)
+    print("Closest guessed award name: ")
+    print("Presenter: ")
+    print("Nominees: ")
+
+
+def format_output(ideas, award_names):
+  output = {}
+  output['host'] = ""
+  output['award_data'] = {}
+  for award in award_names:
+    output['award_data'][award] = {}
+  
+
+  for award in award_names:
+    pass
+
 
 def goal_list(data, out):
   """
