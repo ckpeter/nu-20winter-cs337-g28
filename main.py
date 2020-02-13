@@ -14,6 +14,7 @@ file = sys.argv[1]
 # e.g. 'just won', 'she wins'
 stops = ['just', 'he', 'she', 'have', 'you', "n't", 'patriots', 'pats',
 'should', 'will/should', 'already', 'a', 'an', 'the', 'will', 'would', 'for', 'at', 'in', '!', '#']
+back_stops = ['\B\@\w+', '']
 min_len = 3
 
 def main():
@@ -45,6 +46,7 @@ def main():
     'best original song',
     'cecil b demille'
   ]
+
   for award_name in award_names:
     ideas['winners'][award_name] = {}
 
@@ -53,9 +55,23 @@ def main():
     guess_award_names(tw, ideas)
     ideas['winners'] = guess_winners(tw, ideas, award_names)
   
-  # print_votes(ideas['awards'], detailed=False)
+  answers = {}
+  answers['awards'] = []
+  answers['winners'] = []
+
+  award_candidates = print_votes(ideas['awards'], detailed=False)
+  for i in range(1, 11):
+    answers['awards'].append(award_candidates[-i])
+
   for award in award_names:
-    print_votes(ideas['winners'][award], detailed=False)
+    candidates = print_votes(ideas['winners'][award], detailed=False)
+    if len(candidates) < 1:
+      answers['winners'].append("None Found")
+    else:
+      answers['winners'].append(candidates[-1])
+
+  output_readable(answers, award_names)
+
 
 """
 Given one tweet, evaluate it, and if it fits the target goal, add to the votes.
@@ -153,14 +169,17 @@ def print_votes(votes, detailed=True):
     lines = map(
       lambda k: "===== " + k + " (" + str(len(votes[k])) + " votes) =====\n", keys)
     
-  print("\n".join(lines))
+  # print("\n".join(lines))
+  return keys
 
-def output_readable(ideas, awards):
-  for award in awards:
+def output_readable(answers, awards):
+  print("Host: None\n")
+  for i, award in enumerate(awards):
     print("True Award Name: " + award)
-    print("Closest guessed award name: ")
+    print("Closest guessed award name: " + answers['awards'][i])
     print("Presenter: ")
     print("Nominees: ")
+    print("Winner: " + answers['winners'][i])
 
 
 def format_output(ideas, award_names):
@@ -169,11 +188,15 @@ def format_output(ideas, award_names):
   output['award_data'] = {}
   for award in award_names:
     output['award_data'][award] = {}
-  
+    output['award_data'][award]['nominees'] = []
+    output['award_data'][award]['presenters'] = []
+    output['award_data'][award]['winner'] = ""
+
 
   for award in award_names:
     pass
 
+  return output
 
 def goal_list(data, out):
   """
